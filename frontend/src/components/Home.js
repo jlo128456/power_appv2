@@ -5,7 +5,7 @@ function Home() {
   return (
     <div>
       <h1>Welcome to Power Plan Finder</h1>
-      <p>Select a plan or sign up to begin.</p>
+      <p>Sign up free account to begin.</p>
     </div>
   );
 }
