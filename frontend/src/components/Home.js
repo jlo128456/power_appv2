@@ -1,11 +1,12 @@
 // src/components/Home.js
 import React from "react";
+import Signup from "./Signup";
 
-function Home() {
+function Home({ setUser }) {
   return (
     <div>
       <h1>Welcome to Power Plan Finder</h1>
-      <p>Sign up free account to begin.</p>
+      <Signup setUser={setUser} />
     </div>
   );
 }
