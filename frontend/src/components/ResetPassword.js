@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 
 function ResetPassword() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); //resetpassword function
 
   const handleReset = (e) => {
     e.preventDefault();
