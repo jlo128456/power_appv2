@@ -1,11 +1,12 @@
 // src/components/Signup.js
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Signup({ setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSignup = (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -13,8 +14,7 @@ function Signup({ setUser }) {
       return;
     }
 
-    // Simulate signup/login
-    setUser({ email }); // You might store more later
+    setUser({ email });
     setEmail("");
     setPassword("");
   };
@@ -22,10 +22,11 @@ function Signup({ setUser }) {
   return (
     <div>
       <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
+      <form onSubmit={handleSignup}>
+        <div className="form-group">
+          <label htmlFor="email">Email:</label>
           <input
+            id="email"
             type="email"
             value={email}
             placeholder="you@example.com"
@@ -34,9 +35,10 @@ function Signup({ setUser }) {
           />
         </div>
 
-        <div>
-          <label>Password:</label>
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
           <input
+            id="password"
             type="password"
             value={password}
             placeholder="Enter your password"
@@ -46,9 +48,16 @@ function Signup({ setUser }) {
         </div>
 
         <button type="submit">Sign Up</button>
+
+        <p style={{ marginTop: "10px" }}>
+          <Link to="/reset-password" style={{ color: "#0077cc", textDecoration: "none" }}>
+            Forgot Password?
+          </Link>
+        </p>
       </form>
     </div>
   );
 }
 
 export default Signup;
+
