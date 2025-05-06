@@ -71,3 +71,4 @@ class User(db.Model):
             "username": self.username,
             "postcode": self.postcode
         }
+        
