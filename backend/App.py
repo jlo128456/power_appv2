@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash
 app = Flask(__name__)
 
 # Configure database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///energy.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/energy.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database and enable CORS
