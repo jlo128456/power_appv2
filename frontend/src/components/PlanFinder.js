@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import "./PlanFinder.css"; // optional if you want to extract styles
+
 
 function PlanFinder() {
   const [plans, setPlans] = useState([]);
