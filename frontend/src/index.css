@@ -17,10 +17,20 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
+  position: relative;
+  z-index: 0;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.7); /* Light overlay */
+  z-index: -1;
 }
 
 .App {
-  max-width: 600px;
+  max-width: 900px;
   width: 100%;
   background: white;
   padding: 30px;
@@ -51,7 +61,7 @@ h1, h2 {
   color: #222;
 }
 
-/* Modern form layout with vertical alignment */
+/* Modern form layout */
 form {
   display: flex;
   flex-direction: column;
@@ -90,5 +100,42 @@ button {
 
 button:hover {
   background-color: #005fa3;
+}
+
+/* Plan Cards Layout */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.plan-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+}
+
+.plan-card h3 {
+  margin-top: 0;
+  color: #0077cc;
+}
+
+.plan-card a {
+  display: inline-block;
+  margin-top: 10px;
+  color: #0077cc;
+  text-decoration: none;
+}
+
+.plan-card a:hover {
+  text-decoration: underline;
 }
 
