@@ -1,12 +1,12 @@
-// src/components/Signup.js
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Signup({ setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -14,7 +14,29 @@ function Signup({ setUser }) {
       return;
     }
 
-    setUser({ email });
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: email, // backend expects "username"
+          password: password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser(data.user);
+        navigate(`/plans?postcode=${data.user.postcode}`);
+      } else {
+        alert(data.error || "Login failed");
+      }
+    } catch (err) {
+      console.error("Error during signup:", err);
+      alert("Something went wrong. Try again later.");
+    }
+
     setEmail("");
     setPassword("");
   };
@@ -60,4 +82,3 @@ function Signup({ setUser }) {
 }
 
 export default Signup;
-
