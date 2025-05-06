@@ -1,12 +1,10 @@
-#Entry point for flask framework
+# Entry point for Flask framework
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from models import db, EnergyPlan, User
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
 import os
-
-
 
 app = Flask(__name__)
 
@@ -52,6 +50,15 @@ def signup():
         print(e)
         return jsonify(error="Invalid user data or database error"), 400
 
+# Get all users
+@app.route('/api/users')
+def get_users():
+    try:
+        users = User.query.all()
+        return jsonify([user.to_dict() for user in users]), 200
+    except SQLAlchemyError:
+        return jsonify(error="Failed to fetch users"), 500
+
 # Get energy plans filtered by postcode group
 @app.route('/api/energy-plans-by-postcode/<postcode>')
 def get_plans_by_postcode(postcode):
@@ -90,3 +97,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
