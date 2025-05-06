@@ -4,11 +4,16 @@ from flask_cors import CORS
 from models import db, EnergyPlan, User
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
+import os
+
+
 
 app = Flask(__name__)
 
 # Configure database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/energy.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, "database", "energy.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database and enable CORS
