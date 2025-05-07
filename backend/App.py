@@ -39,8 +39,8 @@ def signup():
         return jsonify(user.to_dict()), 201
     except Exception as e:
         print("Signup error:", e)
-        traceback.print_exc()
         return jsonify(error="Signup failed"), 400
+
 
 # Login existing user
 @app.route('/api/login', methods=['POST'])
@@ -54,7 +54,6 @@ def login():
             return jsonify({"error": "Invalid credentials"}), 401
     except Exception as e:
         print("Login error:", e)
-        traceback.print_exc()
         return jsonify({"error": "Login failed"}), 500
 
 # Get all users
