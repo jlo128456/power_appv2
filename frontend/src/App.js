@@ -19,7 +19,6 @@ function App() {
           <Link to="/account">Account</Link> |{" "}
           <Link to="/about">About</Link> |{" "}
           <Link to="/contact">Contact</Link> |{" "}
-          <Link to="/reset-password">Reset Password</Link>
         </nav>
       )}
 

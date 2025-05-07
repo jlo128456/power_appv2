@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 function Account({ user, setUser }) {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    email: user?.email || "",
-    postcode: user?.postcode || ""
+    email: "",
+    postcode: ""
   });
 
   useEffect(() => {
-    if (user) {
+    if (!user) {
+      navigate("/");
+    } else {
       setFormData({
         email: user.email,
         postcode: user.postcode
       });
     }
-  }, [user]);
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,6 +54,7 @@ function Account({ user, setUser }) {
       });
       if (res.ok) {
         setUser(null);
+        navigate("/");
         alert("Account deleted.");
       } else {
         const data = await res.json();
@@ -59,8 +65,6 @@ function Account({ user, setUser }) {
       alert("Failed to delete account.");
     }
   };
-
-  if (!user) return <p>Please log in to view account details.</p>;
 
   return (
     <div>
@@ -76,6 +80,9 @@ function Account({ user, setUser }) {
       <button onClick={handleDelete} style={{ color: "red" }}>
         Delete Account
       </button>
+      <p style={{ marginTop: "10px" }}>
+        <Link to="/reset-password">Reset Password</Link>
+      </p>
     </div>
   );
 }
