@@ -10,19 +10,24 @@ function Signup({ setUser }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      setUser(data.user);
-      navigate(`/plans?postcode=${data.user.postcode}`);
-    } else {
-      alert(data.error || "Signup failed");
+      if (response.ok) {
+        setUser(data);
+        navigate(`/plans?postcode=${data.postcode}`);
+      } else {
+        alert(data.error || "Signup failed");
+      }
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert("Something went wrong");
     }
   };
 
@@ -56,3 +61,4 @@ function Signup({ setUser }) {
 }
 
 export default Signup;
+
