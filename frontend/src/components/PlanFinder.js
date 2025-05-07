@@ -1,53 +1,65 @@
+// src/components/PlanFinder.js
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 
 function PlanFinder() {
   const [plans, setPlans] = useState([]);
-  const [searchParams] = useSearchParams();
-  const postcode = searchParams.get("postcode");
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+
+  // Extract postcode from query string
+  const params = new URLSearchParams(location.search);
+  const postcode = params.get("postcode");
 
   useEffect(() => {
+    async function fetchPlans() {
+      try {
+        const res = await fetch(`/api/energy-plans-by-postcode/${postcode}`);
+        const data = await res.json();
+        if (res.ok) {
+          setPlans(data);
+        } else {
+          setPlans([]);
+          console.warn(data.error);
+        }
+      } catch (err) {
+        console.error("Failed to fetch plans:", err);
+        setPlans([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     if (postcode) {
-      fetch(`/api/energy-plans-by-postcode/${postcode}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setPlans(data);
-          } else {
-            setPlans([]);
-          }
-        });
+      fetchPlans();
     }
   }, [postcode]);
+
+  if (loading) return <p>Loading plans...</p>;
 
   return (
     <div>
       <h2>Energy Plans for Postcode {postcode}</h2>
-
       {plans.length === 0 ? (
         <p>No plans available.</p>
       ) : (
-        <div className="plan-grid">
+        <ul>
           {plans.map((plan) => (
-            <div key={plan.id} className="plan-card">
-              <h3>{plan.plan_name}</h3>
-              <p><strong>Provider:</strong> {plan.provider}</p>
-              <p><strong>Usage Rate:</strong> {plan.usage_rate_cents}¢/kWh</p>
-              <p><strong>Supply Charge:</strong> {plan.supply_charge_cents}¢/day</p>
-              <p><strong>Solar Feed-in:</strong> {plan.solar_feed_in_cents}¢</p>
-              <p><strong>Contract Length:</strong> {plan.contract_length_months} months</p>
-              <p><strong>Green Energy:</strong> {plan.green_energy_percent}%</p>
-              <p><strong>State:</strong> {plan.state}</p>
-              <a href={plan.fact_sheet_url} target="_blank" rel="noopener noreferrer">
-                View Fact Sheet
-              </a>
-            </div>
+            <li key={plan.id}>
+              <strong>{plan.plan_name}</strong> - {plan.provider_name}<br />
+              Usage: {plan.usage_rate_cents}¢/kWh<br />
+              Supply: {plan.supply_charge_cents}¢/day<br />
+              Solar Feed-in: {plan.solar_feed_in_cents}¢<br />
+              Green Energy: {plan.green_energy_percent}%<br />
+              <a href={plan.fact_sheet_url} target="_blank" rel="noopener noreferrer">Fact Sheet</a>
+              <hr />
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
 }
 
 export default PlanFinder;
+
