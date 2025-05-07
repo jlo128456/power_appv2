@@ -97,11 +97,11 @@ def seed():
 
     # Add users
     users = [
-        User(name="Alice", email="alice@example.com"),
-        User(name="Bob", email="bob@example.com"),
-        User(name="Charlie", email="charlie@example.com"),
-        User(name="Diana", email="diana@example.com"),
-        User(name="Ethan", email="ethan@example.com")
+        User(email="alice@example.com", password=generate_password_hash("alice123"), postcode="3000"),
+        User(email="bob@example.com", password=generate_password_hash("bob123"), postcode="3000"),
+        User(email="charlie@example.com", password=generate_password_hash("charlie123"), postcode="4000"),
+        User(email="diana@example.com", password=generate_password_hash("diana123"), postcode="2000"),
+        User(email="ethan@example.com", password=generate_password_hash("ethan123"), postcode="6000"),
     ]
     session.add_all(users)
     session.commit()

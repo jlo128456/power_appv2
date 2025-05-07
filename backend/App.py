@@ -4,6 +4,7 @@ from flask_cors import CORS
 from models import db, EnergyPlan, User
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
+import traceback
 import os
 
 app = Flask(__name__)
@@ -39,7 +40,7 @@ def signup():
     try:
         # Create user with hashed password
         user = User(
-            username=data['username'],
+            email=data['email'],
             password=generate_password_hash(data['password']),
             postcode=data['postcode']
         )
@@ -55,9 +56,18 @@ def signup():
 def get_users():
     try:
         users = User.query.all()
-        return jsonify([user.to_dict() for user in users]), 200
-    except SQLAlchemyError:
-        return jsonify(error="Failed to fetch users"), 500
+        print("Fetched users:", users)
+
+        for user in users:
+            print("User:", user.username, user.postcode)
+
+        user_dicts = [user.to_dict() for user in users]
+        return jsonify(user_dicts), 200
+
+    except Exception as e:
+        print("Error in /api/users route:")
+        traceback.print_exc()
+        return jsonify(error="Internal server error"), 500
 
 # Get energy plans filtered by postcode group
 @app.route('/api/energy-plans-by-postcode/<postcode>')
