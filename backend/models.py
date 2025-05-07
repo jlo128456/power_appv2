@@ -50,8 +50,7 @@ class EnergyPlan(db.Model):
             "green_energy_percent": self.green_energy_percent,
             "postcode": self.postcode,
             "state": self.state,
-            "fact_sheet_url": self.fact_sheet_url,
-            "provider": self.provider.name if self.provider else None
+            "provider_name": self.provider.name  # assumes relationship is defined
         }
 
 # ── User Model ────────────────────────────────
