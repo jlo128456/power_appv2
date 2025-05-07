@@ -1,11 +1,19 @@
-// src/components/Account.js
 import React, { useState, useEffect } from "react";
 
 function Account({ user, setUser }) {
   const [formData, setFormData] = useState({
-    email: user.email,
-    postcode: user.postcode
+    email: user?.email || "",
+    postcode: user?.postcode || ""
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        email: user.email,
+        postcode: user.postcode
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,6 +59,8 @@ function Account({ user, setUser }) {
       alert("Failed to delete account.");
     }
   };
+
+  if (!user) return <p>Please log in to view account details.</p>;
 
   return (
     <div>
