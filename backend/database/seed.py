@@ -7,7 +7,10 @@ from models import db, Provider, EnergyPlan, User
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/energy.db'
+
+basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+db_path = os.path.join(basedir, "database", "energy.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 

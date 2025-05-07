@@ -59,7 +59,7 @@ def get_users():
         print("Fetched users:", users)
 
         for user in users:
-            print("User:", user.username, user.postcode)
+            print("User:", user.email, user.postcode)
 
         user_dicts = [user.to_dict() for user in users]
         return jsonify(user_dicts), 200
