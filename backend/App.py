@@ -99,6 +99,33 @@ def map_postcode_to_group(postcode):
         "6": "6000"
     }.get(postcode[0], "4000")
 
+# PATCH user
+@app.route('/api/users/<int:user_id>', methods=['PATCH'])
+def update_user(user_id):
+    user = User.query.get_or_404(user_id)
+    data = request.json
+    try:
+        user.email = data.get('email', user.email)
+        user.postcode = data.get('postcode', user.postcode)
+        db.session.commit()
+        return jsonify(user.to_dict()), 200
+    except Exception as e:
+        print("User update error:", e)
+        return jsonify(error="Update failed"), 400
+
+# DELETE user
+@app.route('/api/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        return '', 204
+    except Exception as e:
+        print("User delete error:", e)
+        return jsonify(error="Delete failed"), 500
+
+
 # Error: page not found
 @app.errorhandler(404)
 def not_found(error):
