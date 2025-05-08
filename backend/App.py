@@ -27,19 +27,30 @@ def index():
 # Signup a new user
 @app.route('/api/signup', methods=['POST'])
 def signup():
-    data = request.json
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+    postcode = data.get("postcode")
+
+    if not email or not password or not postcode:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    # Try creating user here
     try:
-        user = User(
-            email=data['email'],
-            password=generate_password_hash(data['password']),
-            postcode=data['postcode']
-        )
+        user = User(email=email, postcode=postcode)
+        user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        return jsonify(user.to_dict()), 201
+
+        return jsonify({
+            "email": user.email,
+            "id": user.id,
+            "postcode": user.postcode
+        }), 201
     except Exception as e:
-        print("Signup error:", e)
-        return jsonify(error="Signup failed"), 400
+        print(f"Signup error: {e}")  # <-- helpful for debugging
+        return jsonify({"error": "Signup failed"}), 400
+
 
 
 # Login existing user
