@@ -1,13 +1,17 @@
+# seed.py
+
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
+import random
 from flask import Flask
 from models import db, Provider, EnergyPlan, User
 from werkzeug.security import generate_password_hash
 
-app = Flask(__name__)
+# Add parent directory to Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# Initialize Flask app
+app = Flask(__name__)
 basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 db_path = os.path.join(basedir, "database", "energy.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
@@ -16,94 +20,51 @@ db.init_app(app)
 
 def seed():
     with app.app_context():
+        print("🔄 Resetting energy.db...")
         db.drop_all()
         db.create_all()
 
-        # Add energy providers
+        # ── Seed 5 Providers ───────────────────────────────
+        print("🌱 Seeding providers...")
         providers = [
-            Provider(name="AGL"),
-            Provider(name="Origin"),
-            Provider(name="EnergyAustralia"),
-            Provider(name="Red Energy"),
-            Provider(name="Powershop")
+            Provider(name="Green Energy Co"),
+            Provider(name="PowerMax Australia"),
+            Provider(name="SolarGo"),
+            Provider(name="EcoWatt"),
+            Provider(name="VoltNation")
         ]
         db.session.add_all(providers)
         db.session.commit()
 
-        # Get provider references
-        agl = Provider.query.filter_by(name="AGL").first()
-        origin = Provider.query.filter_by(name="Origin").first()
-        eaus = Provider.query.filter_by(name="EnergyAustralia").first()
-        red = Provider.query.filter_by(name="Red Energy").first()
-        powershop = Provider.query.filter_by(name="Powershop").first()
+        # ── Seed Dynamic Energy Plans by Postcode ───────────
+        print("⚡ Seeding energy plans...")
+        postcode_groups = ["2000", "3000", "4000", "6000"]
+        states = {"2": "NSW", "3": "VIC", "4": "QLD", "6": "WA"}
+        plans = []
 
-        # Add energy plans
-        plans = [
-            EnergyPlan(
-                plan_name="AGL Value Saver",
-                usage_rate_cents=25.3,
-                supply_charge_cents=98.5,
-                solar_feed_in_cents=6.0,
-                contract_length_months=12,
-                green_energy_percent=20,
-                postcode="2000",
-                state="NSW",
-                fact_sheet_url="https://agl.com.au/factsheets/value-saver",
-                provider_id=agl.id
-            ),
-            EnergyPlan(
-                plan_name="Origin Go Plan",
-                usage_rate_cents=23.9,
-                supply_charge_cents=95.0,
-                solar_feed_in_cents=5.5,
-                contract_length_months=12,
-                green_energy_percent=25,
-                postcode="3000",
-                state="VIC",
-                fact_sheet_url="https://origin.com.au/factsheets/go-plan",
-                provider_id=origin.id
-            ),
-            EnergyPlan(
-                plan_name="EnergyAustralia Total Home",
-                usage_rate_cents=24.7,
-                supply_charge_cents=90.0,
-                solar_feed_in_cents=7.0,
-                contract_length_months=24,
-                green_energy_percent=15,
-                postcode="4000",
-                state="QLD",
-                fact_sheet_url="https://energyaustralia.com.au/factsheets/total-home",
-                provider_id=eaus.id
-            ),
-            EnergyPlan(
-                plan_name="Red Living Energy Saver",
-                usage_rate_cents=26.5,
-                supply_charge_cents=101.0,
-                solar_feed_in_cents=5.0,
-                contract_length_months=24,
-                green_energy_percent=100,
-                postcode="2000",
-                state="NSW",
-                fact_sheet_url="https://redenergy.com.au/factsheets/living-saver",
-                provider_id=red.id
-            ),
-            EnergyPlan(
-                plan_name="Powershop Smart Saver",
-                usage_rate_cents=25.0,
-                supply_charge_cents=92.0,
-                solar_feed_in_cents=8.0,
-                contract_length_months=6,
-                green_energy_percent=50,
-                postcode="6000",
-                state="WA",
-                fact_sheet_url="https://powershop.com.au/factsheets/smart-saver",
-                provider_id=powershop.id
-            )
-        ]
-        db.session.add_all(plans)
+        for postcode in postcode_groups:
+            state = states.get(postcode[0], "NSW")
+            for i in range(3):  # 3 plans per postcode
+                provider = providers[(i + postcode_groups.index(postcode)) % len(providers)]
+                plan = EnergyPlan(
+                    plan_name=f"{provider.name} Plan {i+1} - {postcode}",
+                    usage_rate_cents=round(random.uniform(20.0, 35.0), 2),
+                    supply_charge_cents=round(random.uniform(70.0, 100.0), 2),
+                    solar_feed_in_cents=round(random.uniform(5.0, 15.0), 2),
+                    contract_length_months=random.choice([12, 24]),
+                    green_energy_percent=random.choice([10, 50, 100]),
+                    postcode=postcode,
+                    state=state,
+                    fact_sheet_url=f"https://example.com/fact-sheet/{postcode}/{i+1}",
+                    provider_id=provider.id
+                )
+                plans.append(plan)
+                db.session.add(plan)
+
         db.session.commit()
 
-        # Add users
+        # ── Seed Users ─────────────────────────────────────
+        print("👤 Seeding users...")
         users = [
             User(email="alice@example.com", password=generate_password_hash("alice123"), postcode="3000"),
             User(email="bob@example.com", password=generate_password_hash("bob123"), postcode="3000"),
@@ -114,18 +75,20 @@ def seed():
         db.session.add_all(users)
         db.session.commit()
 
-        # Add favorite plans
+        # ── Assign Favorites ───────────────────────────────
+        print("⭐ Assigning favorites...")
         all_plans = EnergyPlan.query.all()
         alice, bob, charlie, diana, ethan = User.query.all()
 
         alice.favorites.extend([all_plans[0], all_plans[2]])
         bob.favorites.extend([all_plans[1], all_plans[3]])
         charlie.favorites.append(all_plans[4])
-        diana.favorites.extend([all_plans[1], all_plans[4]])
-        ethan.favorites.append(all_plans[0])
+        diana.favorites.extend([all_plans[5], all_plans[6]])
+        ethan.favorites.append(all_plans[-1])
 
         db.session.commit()
-        print("✅ Seeded mock providers, plans, users, and favorites into energy.db.")
+
+        print("✅ Seeding complete! Providers, plans, users, and favorites inserted.")
 
 if __name__ == "__main__":
     seed()

@@ -48,7 +48,9 @@ def signup():
             "postcode": user.postcode
         }), 201
     except Exception as e:
-        print(f"Signup error: {e}")  # <-- helpful for debugging
+        import traceback
+        print("Signup error:", e)
+        traceback.print_exc()  # <-- this shows the full stack trace
         return jsonify({"error": "Signup failed"}), 400
 
 
