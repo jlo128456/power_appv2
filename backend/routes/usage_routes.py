@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from models import db, User, UsageHistory
 from helper import get_request_data, json_response, handle_db_commit
 
@@ -7,13 +7,29 @@ usage_bp = Blueprint("usage", __name__)
 @usage_bp.route('/api/users/<int:user_id>/usage', methods=['POST'])
 def create_usage(user_id):
     user = User.query.get_or_404(user_id)
-    month, kwh_used = get_request_data("month", "kwh_used")
-    if not month or kwh_used is None:
-        return json_response({"error": "Month and kWh used required"}, 400)
-    usage = UsageHistory(user_id=user.id, month=month, kwh_used=float(kwh_used))
-    return json_response(usage.to_dict(), 201) if handle_db_commit(usage) else json_response({"error": "Failed to save usage"}, 500)
+    data = request.get_json()
 
-@usage_bp.route('/api/users/<int:user_id>/usage')
+    # Support both single and multiple entries
+    usage_entries = data if isinstance(data, list) else [data]
+    created = []
+
+    for entry in usage_entries:
+        month = entry.get("month")
+        kwh_used = entry.get("kwh_used")
+        if not month or kwh_used is None:
+            continue  # skip invalid entry
+        usage = UsageHistory(user_id=user.id, month=month, kwh_used=float(kwh_used))
+        db.session.add(usage)
+        created.append(usage)
+
+    try:
+        db.session.commit()
+        return json_response([u.to_dict() for u in created], 201)
+    except:
+        db.session.rollback()
+        return json_response({"error": "Failed to save usage entries"}, 500)
+
+@usage_bp.route('/api/users/<int:user_id>/usage', methods=['GET'])
 def get_usage(user_id):
     user = User.query.get_or_404(user_id)
     usage = UsageHistory.query.filter_by(user_id=user.id).all()
