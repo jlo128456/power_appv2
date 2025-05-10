@@ -30,11 +30,13 @@ function PlanFinder({ user }) {
   }, [user]);
 
   if (loading) return <p>Loading plans...</p>;
+
   const baseCost = (monthlyUsage * 12 * baseRate).toFixed(2);
 
   return (
     <div>
       <h2>Energy Plans for Postcode {postcode}</h2>
+
       <label>
         Enter your monthly kWh usage:
         <input
@@ -67,8 +69,12 @@ function PlanFinder({ user }) {
           return (
             <li key={plan.id}>
               <strong>{plan.plan_name}</strong> - {plan.provider_name}<br />
-              Yearly Cost: ${cost} — Savings: ${savings}<br />
               Usage: {plan.usage_rate_cents}¢/kWh — Supply: {plan.supply_charge_cents}¢/day<br />
+              {plan.solar_feed_in_cents > 0 && (
+               <>Solar Feed-in Tariff: {plan.solar_feed_in_cents}¢/kWh<br /></>
+              )}
+              Yearly Cost: ${cost}
+              {monthlyUsage > 0 && <> — Savings: ${savings}</>}<br />
               <a href={plan.fact_sheet_url} target="_blank" rel="noopener noreferrer">Fact Sheet</a>
               <hr />
             </li>
@@ -80,3 +86,4 @@ function PlanFinder({ user }) {
 }
 
 export default PlanFinder;
+
