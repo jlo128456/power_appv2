@@ -1,38 +1,24 @@
 // src/components/PlanFinder.js
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { fetchPlansByPostcode, renderPlanDetails } from "./helper";
 
 function PlanFinder() {
   const [plans, setPlans] = useState([]);
+  const [usage, setUsage] = useState("");
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
-  // Extract postcode from query string
-  const params = new URLSearchParams(location.search);
-  const postcode = params.get("postcode");
+  const postcode = new URLSearchParams(location.search).get("postcode");
 
   useEffect(() => {
-    async function fetchPlans() {
-      try {
-        const res = await fetch(`/api/energy-plans-by-postcode/${postcode}`);
-        const data = await res.json();
-        if (res.ok) {
-          setPlans(data);
-        } else {
-          setPlans([]);
-          console.warn(data.error);
-        }
-      } catch (err) {
-        console.error("Failed to fetch plans:", err);
-        setPlans([]);
-      } finally {
-        setLoading(false);
-      }
-    }
+    if (!postcode) return;
 
-    if (postcode) {
-      fetchPlans();
-    }
+    (async () => {
+      const data = await fetchPlansByPostcode(postcode);
+      setPlans(data);
+      setLoading(false);
+    })();
   }, [postcode]);
 
   if (loading) return <p>Loading plans...</p>;
@@ -40,26 +26,25 @@ function PlanFinder() {
   return (
     <div>
       <h2>Energy Plans for Postcode {postcode}</h2>
+
+      <label>
+        Enter your monthly kWh usage:
+        <input
+          type="number"
+          value={usage}
+          placeholder="e.g. 600"
+          onChange={(e) => setUsage(e.target.value)}
+          style={{ marginLeft: "10px", padding: "4px" }}
+        />
+      </label>
+
       {plans.length === 0 ? (
         <p>No plans available.</p>
       ) : (
-        <ul>
-          {plans.map((plan) => (
-            <li key={plan.id}>
-              <strong>{plan.plan_name}</strong> - {plan.provider_name}<br />
-              Usage: {plan.usage_rate_cents}¢/kWh<br />
-              Supply: {plan.supply_charge_cents}¢/day<br />
-              Solar Feed-in: {plan.solar_feed_in_cents}¢<br />
-              Green Energy: {plan.green_energy_percent}%<br />
-              <a href={plan.fact_sheet_url} target="_blank" rel="noopener noreferrer">Fact Sheet</a>
-              <hr />
-            </li>
-          ))}
-        </ul>
+        <ul>{plans.map((plan) => renderPlanDetails(plan, usage))}</ul>
       )}
     </div>
   );
 }
 
 export default PlanFinder;
-
