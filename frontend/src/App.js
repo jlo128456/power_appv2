@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
@@ -17,7 +17,7 @@ function App() {
         <nav>
           <Link to="/account">Account</Link> |{" "}
           <Link to="/about">About</Link> |{" "}
-          <Link to="/contact">Contact</Link> |{" "}
+          <Link to="/contact">Contact</Link>
         </nav>
       )}
 
