@@ -4,9 +4,11 @@ from flask import jsonify, request
 import traceback
 from models import db
 
-def get_request_data(*fields):
+def get_request_data(*fields, full=False):
     data = request.get_json()
-    return [data.get(f) for f in fields]
+    if full:
+        return data
+    return (data.get(f) for f in fields)
 
 def json_response(payload=None, status=200):
     return jsonify(payload or {}), status
