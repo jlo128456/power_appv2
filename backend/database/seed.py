@@ -43,7 +43,7 @@ def seed():
                     plan_name=f"{provider.name} Plan {i+1} - {postcode}",
                     usage_rate_cents=round(random.uniform(20, 35), 2),
                     supply_charge_cents=round(random.uniform(70, 100), 2),
-                    solar_feed_in_cents=round(random.uniform(5, 15), 2),
+                    solar_feed_in_cents=round(random.uniform(15, 5), 2),
                     contract_length_months=random.choice([12, 24]),
                     green_energy_percent=random.choice([10, 50, 100]),
                     postcode=postcode,
