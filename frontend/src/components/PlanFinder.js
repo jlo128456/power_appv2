@@ -50,8 +50,8 @@ function PlanFinder({ user }) {
       {user && usageHistory.length > 0 && (
         <>
           <h3>Your Usage History</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={usageHistory}>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={usageHistory} barSize={20}>
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
