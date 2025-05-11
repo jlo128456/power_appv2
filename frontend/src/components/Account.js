@@ -1,33 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { getBaseUrl } from "./helper";  // adjust the path if needed
 
 function Account({ user, setUser }) {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    postcode: ""
-  });
+  const [formData, setFormData] = useState({ email: "", postcode: "" });
 
   useEffect(() => {
-    if (!user) {
-      navigate("/");
-    } else {
-      setFormData({
-        email: user.email,
-        postcode: user.postcode
-      });
-    }
+    if (!user) navigate("/");
+    else setFormData({ email: user.email, postcode: user.postcode });
   }, [user, navigate]);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/users/${user.id}`, {
+      const res = await fetch(`${getBaseUrl()}/api/users/${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -47,9 +37,8 @@ function Account({ user, setUser }) {
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete your account?")) return;
-
     try {
-      const res = await fetch(`/api/users/${user.id}`, {
+      const res = await fetch(`${getBaseUrl()}/api/users/${user.id}`, {
         method: "DELETE"
       });
       if (res.ok) {

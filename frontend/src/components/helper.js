@@ -56,3 +56,9 @@ export function calculateYearlyCost(plan, monthlyUsage, monthlyExport = 0) {
 export function handleLogout(setUser) {
   setUser(null);
 }
+export const getBaseUrl = () => {
+  const isLocalhost = window.location.hostname === "localhost";
+  return isLocalhost
+    ? "http://localhost:5000"  // your local Flask backend
+    : "https://power-appv2.onrender.com"; // your live Render backend
+};
