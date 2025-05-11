@@ -7,13 +7,11 @@ function Signup({ setUser }) {
   const [usage, setUsage] = useState([{ month: "2024-12", kwh_used: "" }]);
   const navigate = useNavigate();
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const updateUsage = (i, key, val) => {
-    const updated = [...usage];
-    updated[i][key] = val;
-    setUsage(updated);
-  };
+  const updateUsage = (i, key, val) =>
+    setUsage(usage.map((u, idx) => (idx === i ? { ...u, [key]: val } : u)));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,9 +29,12 @@ function Signup({ setUser }) {
         body: JSON.stringify(payload)
       });
       const data = await res.json();
-      res.ok ? (setUser(data), navigate(`/plans?postcode=${data.postcode}`)) : alert(data.error || "Signup failed");
+      if (res.ok) {
+        setUser(data);
+        navigate(`/plans?postcode=${data.postcode}`);
+      } else alert(data.error || "Signup failed");
     } catch (err) {
-      console.error(err);
+      console.error("Signup error:", err);
       alert("Something went wrong");
     }
   };
@@ -56,12 +57,29 @@ function Signup({ setUser }) {
       <h3>Usage History</h3>
       {usage.map((u, i) => (
         <div key={i}>
-          <input type="month" value={u.month} onChange={e => updateUsage(i, "month", e.target.value)} required />
-          <input type="number" placeholder="kWh" value={u.kwh_used} onChange={e => updateUsage(i, "kwh_used", e.target.value)} required />
-          {usage.length > 1 && <button type="button" onClick={() => setUsage(usage.filter((_, idx) => idx !== i))}>Remove</button>}
+          <input
+            type="month"
+            value={u.month}
+            onChange={(e) => updateUsage(i, "month", e.target.value)}
+            required
+          />
+          <input
+            type="number"
+            placeholder="kWh"
+            value={u.kwh_used}
+            onChange={(e) => updateUsage(i, "kwh_used", e.target.value)}
+            required
+          />
+          {usage.length > 1 && (
+            <button type="button" onClick={() => setUsage(usage.filter((_, idx) => idx !== i))}>
+              Remove
+            </button>
+          )}
         </div>
       ))}
-      <button type="button" onClick={() => setUsage([...usage, { month: "", kwh_used: "" }])}>+ Add Usage Entry</button>
+      <button type="button" onClick={() => setUsage([...usage, { month: "", kwh_used: "" }])}>
+        + Add Usage Entry
+      </button>
       <br /><br />
       <button type="submit">Sign Up</button>
     </form>
