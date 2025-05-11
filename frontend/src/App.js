@@ -8,6 +8,7 @@ import Account from "./components/Account";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import { handleLogout } from "./components/helper";
+import ThankYou from "./components/ThankYou";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -50,6 +51,7 @@ function App() {
         <Route path="/plans" element={<PlanFinder user={user} />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/account" element={<Account user={user} setUser={setUser} />} />
+        <Route path="/thank-you" element={<ThankYou />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
