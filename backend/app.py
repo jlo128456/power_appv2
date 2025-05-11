@@ -6,15 +6,25 @@ from routes import register_routes
 import os
 
 app = Flask(__name__)
+
+# Fallback to local SQLite if DATABASE_URL is not set
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, "database", "energy.db")
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+local_db = os.path.join(basedir, "database", "energy.db")
+
+# Use SQLiteCloud or local SQLite
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    "DATABASE_URL",
+    f"sqlite:///{local_db}"
+)
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Init extensions
 db.init_app(app)
 migrate = Migrate(app, db)
 CORS(app)
 
+# Register routes
 register_routes(app)
 
 @app.route('/')
