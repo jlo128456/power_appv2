@@ -8,10 +8,7 @@
 }
 
 body {
-
-  background: url("/img/pexels-killian-eon-1185568-2635595.jpg")
-
-    no-repeat center center fixed;
+  background: url("/img/power.jpg") no-repeat center center fixed;
   background-size: cover;
   color: #333;
   min-height: 100vh;
@@ -22,6 +19,7 @@ body {
   position: relative;
   z-index: 0;
 }
+
 
 .App {
   max-width: 900px;
