@@ -14,7 +14,7 @@ function Login({ setUser }) {
       const response = await fetch(`${getBaseUrl()}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -54,9 +54,19 @@ function Login({ setUser }) {
         />
         <button type="submit">Login</button>
       </form>
+
       <p>
         Don’t have an account? <Link to="/signup">Sign up</Link>
       </p>
+
+      <div className="app-description">
+        <h4>What is Power Plan Finder?</h4>
+        <p>
+          Power Plan Finder helps you compare electricity providers and plans
+          based on your postcode and usage. Save money, find better options,
+          and take control of your energy costs.
+        </p>
+      </div>
     </div>
   );
 }

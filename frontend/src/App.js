@@ -22,7 +22,7 @@ function App() {
   };
 
   return (
-  <div className="App" style={{ minHeight: "100vh", backgroundColor: "rgba(255, 255, 255, 0.85)" }}>
+  <div className="App" style={{ minHeight: "50vh", backgroundColor: "rgba(255, 255, 255, 0.85)" }}>
     {!hideNav && (
       <nav style={{ padding: "10px", backgroundColor: "#f5f5f5", borderBottom: "1px solid #ccc" }}>
         {user ? (
