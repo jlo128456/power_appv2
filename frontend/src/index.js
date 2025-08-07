@@ -2,8 +2,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import './base.css';
-import './plans.css';
+import './style/forms.css';
+import './style/layout.css';
+import './style/plans.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
