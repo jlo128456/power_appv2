@@ -1,5 +1,6 @@
 from flask import Blueprint
-from models import db, User
+from models import db
+from models.user import User
 from helper import get_request_data, json_response, handle_db_commit
 
 user_bp = Blueprint("user", __name__)

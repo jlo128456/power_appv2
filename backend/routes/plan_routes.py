@@ -1,5 +1,5 @@
 from flask import Blueprint
-from models import EnergyPlan
+from models.energy_plan import EnergyPlan
 from sqlalchemy.exc import SQLAlchemyError
 from helper import json_response, map_postcode_to_group
 

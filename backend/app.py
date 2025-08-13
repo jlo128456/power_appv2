@@ -1,3 +1,5 @@
+
+
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -23,6 +25,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
 CORS(app)
+#import modells after db is init
+from models.user import User
+from models.provider import Provider
+from models.energy_plan import EnergyPlan
+from models.usage_history import UsageHistory
 
 # Register routes
 register_routes(app)

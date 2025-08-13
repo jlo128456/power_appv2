@@ -1,5 +1,7 @@
 from flask import Blueprint, request
-from models import db, User, UsageHistory
+from models import db
+from models.user import User
+from models.usage_history import UsageHistory
 from helper import get_request_data, json_response, handle_db_commit
 
 usage_bp = Blueprint("usage", __name__)
