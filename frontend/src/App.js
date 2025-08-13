@@ -10,6 +10,11 @@ import Contact from "./components/Contact";
 import ThankYou from "./components/ThankYou";
 import { handleLogout } from "./components/helper";
 
+function PlansWrapper({ fallbackUser }) {
+  const location = useLocation();
+  const mergedUser = location.state?.user ?? fallbackUser ?? null;
+  return <PlanFinder user={mergedUser} />;
+}
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,18 +34,15 @@ function App() {
           {user ? (
             <>
               <Link to="/account">Account</Link> |{" "}
-              <Link to={`/plans?postcode=${user.postcode}`}>Find Plans</Link> |{" "}
-              <Link to="/about">About</Link> |{" "}
-              <Link to="/contact">Contact</Link> |{" "}
-              <button onClick={logoutAndRedirect} className="logout-btn">
-                Logout
-              </button>
+              <Link to={`/plans${user.postcode ? `?postcode=${encodeURIComponent(user.postcode)}` : ""}`}>
+                Find Plans
+              </Link>{" "}
+              | <Link to="/about">About</Link> | <Link to="/contact">Contact</Link> |{" "}
+              <button onClick={logoutAndRedirect} className="logout-btn">Logout</button>
             </>
           ) : (
             <>
-              <Link to="/">Login</Link> |{" "}
-              <Link to="/about">About</Link> |{" "}
-              <Link to="/contact">Contact</Link>
+              <Link to="/">Login</Link> | <Link to="/about">About</Link> | <Link to="/contact">Contact</Link>
             </>
           )}
         </nav>
@@ -49,10 +51,12 @@ function App() {
       <Routes>
         <Route path="/" element={<Login setUser={setUser} />} />
         <Route path="/signup" element={<Signup setUser={setUser} />} />
-        <Route path="/plans" element={<PlanFinder user={user} />} />
+        {/* Wrapper lets /thank-you → /plans carry user via location.state OR fallback to context */}
+        <Route path="/plans" element={<PlansWrapper fallbackUser={user} />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/account" element={<Account user={user} setUser={setUser} />} />
-        <Route path="/thank-you" element={<ThankYou />} />
+        {/* Pass user so ThankYou can forward it during redirect */}
+        <Route path="/thank-you" element={<ThankYou user={user} />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>

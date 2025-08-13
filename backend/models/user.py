@@ -19,7 +19,7 @@ class User(db.Model):
         back_populates="user",
         cascade="all, delete-orphan"
     )
-
+    #using scrypt to salt password with 16 random characters
     def set_password(self, password, *, method="scrypt", salt_length=16):
         """Hash and set the password (salted; default method = scrypt)."""
         if not isinstance(password, str) or len(password) < 8:
