@@ -72,6 +72,14 @@ function Account({ user, setUser }) {
       <p style={{ marginTop: "10px" }}>
         <Link to="/reset-password">Reset Password</Link>
       </p>
+
+      {/* Back to Home Button */}
+      <button
+        onClick={() => navigate("/plans")}
+        style={{ marginTop: "1rem" }}
+      >
+        Back to Home
+      </button>
     </div>
   );
 }
