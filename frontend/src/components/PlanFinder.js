@@ -84,12 +84,7 @@ export default function PlanFinder({ user: userProp }) {
       )}
 
       <div className="plan-actions">
-        <button onClick={() => postcode && fetchPlans(postcode)} disabled={!postcode || loading}>
-          Find Plans
-        </button>
-        <button onClick={onConfirm} disabled={!selectedPlan}>
-          Confirm
-        </button>
+        <button onClick={onConfirm} disabled={!selectedPlan}>Confirm</button>
       </div>
     </div>
   );
