@@ -62,3 +62,10 @@ export const getBaseUrl = () => {
     ? "http://localhost:5000"  // your local Flask backend
     : "https://power-appv2.onrender.com"; // your live Render backend
 };
+
+export const normalizeUsage = (raw = []) =>
+  (raw || []).map((u, i) => ({
+    month:
+      u.month ?? u.label ?? u.period ?? u.date ?? u.reading_date ?? String(i + 1),
+    usage: Number(u.usage ?? u.kwh_used ?? u.kwh ?? u.value ?? 0) || 0,
+  }));
