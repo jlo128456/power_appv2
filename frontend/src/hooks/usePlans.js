@@ -1,12 +1,12 @@
-import { useCallback, useRef, useState } from "react";
+// src/hooks/usePlans.js
+import { useCallback, useMemo, useState } from "react";
 
 function getBaseUrlSafe() {
   try {
-    // If you have a global getBaseUrl(), use it
     // eslint-disable-next-line no-undef
     if (typeof getBaseUrl === "function") return getBaseUrl();
   } catch {}
-  return ""; // same-origin fallback
+  return "";
 }
 
 function buildPlanUrls(postcode) {
@@ -23,25 +23,23 @@ export default function usePlans(initialUsage = null) {
   const [usageHistory, setUsageHistory] = useState(initialUsage);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const lastFetchedFor = useRef(null);
+  const [selectedId, setSelectedId] = useState(null);
 
-  const canRetry = useCallback(
-    (pc) => lastFetchedFor.current !== pc || !!error,
-    [error]
-  );
+  const select = useCallback((id) => setSelectedId(String(id)), []);
+
+  const selectedPlan = useMemo(() => {
+    if (!plans?.length || selectedId == null) return null;
+    return plans.find(p => String(p._id) === String(selectedId)) || null;
+  }, [plans, selectedId]);
 
   const fetchPlans = useCallback(async (pc) => {
     if (!pc) return;
-    if (lastFetchedFor.current === pc) return; // avoid duplicates
-    lastFetchedFor.current = pc;
-
     setLoading(true);
     setError("");
 
     try {
       const urls = buildPlanUrls(pc);
       let data = null;
-
       for (const url of urls) {
         const res = await fetch(url);
         if (res.ok) {
@@ -51,16 +49,29 @@ export default function usePlans(initialUsage = null) {
       }
       if (!data) throw new Error(`Failed to load plans for ${pc}`);
 
-      setPlans(Array.isArray(data?.plans) ? data.plans : data || []);
+      const raw = Array.isArray(data?.plans) ? data.plans : (data || []);
+      // Normalize an internal _id for stable selection
+      const withIds = raw.map((p, idx) => ({ ...p, _id: String(p.id ?? idx) }));
+      setPlans(withIds);
+
       if (data?.usageHistory) setUsageHistory(data.usageHistory);
     } catch (e) {
       setError(e.message || "Something went wrong fetching plans.");
-      lastFetchedFor.current = null; // allow retry
     } finally {
       setLoading(false);
       window.scrollTo(0, 0);
     }
   }, []);
 
-  return { plans, usageHistory, loading, error, fetchPlans, canRetry };
+  return {
+    plans,
+    usageHistory,
+    loading,
+    error,
+    fetchPlans,
+    // selection helpers
+    selectedId,
+    select,
+    selectedPlan,
+  };
 }
